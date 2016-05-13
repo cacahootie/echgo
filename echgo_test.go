@@ -21,9 +21,11 @@ func createTestEngine() (router *gin.Engine, resp *httptest.ResponseRecorder) {
 }
 
 // Prepare a test request to represent specific parameters
-func createRequest() *http.Request {
+func createRequest(queryString string) *http.Request {
+	var qs = "/?"
+	qs += queryString
 	body := new(bytes.Buffer)
-	req, _ := http.NewRequest("GET", "/?hello=world", body)
+	req, _ := http.NewRequest("GET", qs, body)
 	return req
 }
 
@@ -33,7 +35,7 @@ func Test(t *testing.T) {
 	g.Describe("Echgo", func() {
 		g.It("Should repeat one query string parameter", func() {
 			router, resp := createTestEngine()
-			req := createRequest()
+			req := createRequest("hello=world")
 			router.ServeHTTP(resp, req)
 			g.Assert(resp.Body.String()).Equal("{\"hello\":[\"world\"]}\n")
 		})
